@@ -1,7 +1,8 @@
 exports.postSearchBus = (req, res, next) => {
     const source = req.body.source;
     const destination = req.body.destination;
-    res.json(
+    console.log(source,destination)
+    res.status(200).json(
         [
             {
                 id: 'sdfsdf1',

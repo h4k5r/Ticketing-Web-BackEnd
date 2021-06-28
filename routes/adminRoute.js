@@ -7,16 +7,20 @@ const UsersController = require('../controllers/adminController/UsersController'
 
 const router = express.Router();
 
-// /searchBuses routes
+// /Buses routes
 router.post('/searchBuses',BusesController.postSearchBuses);
+router.get('/searchBus/:busId',BusesController.getBus);
+router.post('/addNewBus',BusesController.postAddNewBus);
+router.post('/editBus',BusesController.postEditBus);
 
-// /searchStops routes
+// /Stops routes
 router.post('/searchStops',StopsController.postSearchStops);
+router.get('/searchStop/:stopId',StopsController.getStop)
 
-// /searchStaff routes
+// /Staff routes
 router.post('/searchStaff',StaffController.postSearchStaff);
 
-// /searchUsers routes
+// /Users routes
 router.post('/searchUsers',UsersController.postSearchUsers);
 
 module.exports = router;

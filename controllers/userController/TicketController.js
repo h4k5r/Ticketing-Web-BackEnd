@@ -2,5 +2,58 @@ exports.postBuyTicket = (req, res, next) => {
 
 }
 exports.getTicketHistory = (req, res, next) => {
-
+    res.status(200).json(
+        [
+            {
+                busId:'0000',
+                ticketId:'00001',
+                busNumber:'0000',
+                source:'srirangam',
+                destination:'tolgate',
+                numberOfTickets:'5',
+                bookedTime:'12:00',
+                hasUsed:true
+            },
+            {
+                busId:'0000',
+                ticketId:'00002',
+                busNumber:'0000',
+                source:'srirangam',
+                destination:'tolgate',
+                numberOfTickets:'5',
+                bookedTime:'12:00',
+                hasUsed:true
+            },
+            {
+                busId:'0000',
+                ticketId:'00003',
+                busNumber:'0000',
+                source:'srirangam',
+                destination:'tolgate',
+                numberOfTickets:'5',
+                bookedTime:'12:00',
+                hasUsed:true
+            },
+            {
+                busId:'0000',
+                ticketId:'00004',
+                busNumber:'0000',
+                source:'srirangam',
+                destination:'tolgate',
+                numberOfTickets:'5',
+                bookedTime:'12:00',
+                hasUsed:true
+            },
+            {
+                busId:'0000',
+                ticketId:'00005',
+                busNumber:'0000',
+                source:'srirangam',
+                destination:'tolgate',
+                numberOfTickets:'5',
+                bookedTime:'12:00',
+                hasUsed:true
+            },
+        ]
+    )
 }
