@@ -8,19 +8,25 @@ const UsersController = require('../controllers/adminController/UsersController'
 const router = express.Router();
 
 // /Buses routes
-router.post('/searchBuses',BusesController.postSearchBuses);
-router.get('/searchBus/:busId',BusesController.getBus);
-router.post('/addNewBus',BusesController.postAddNewBus);
-router.post('/editBus',BusesController.postEditBus);
+router.post('/searchBuses', BusesController.postSearchBuses);
+router.get('/searchBus/:busId', BusesController.getBus);
+router.post('/addNewBus', BusesController.postAddNewBus);
+router.put('/editBus', BusesController.postEditBus);
+router.delete('/deleteBus/:busId',BusesController.deleteBus)
 
 // /Stops routes
-router.post('/searchStops',StopsController.postSearchStops);
-router.get('/searchStop/:stopId',StopsController.getStop)
+router.post('/searchStops', StopsController.postSearchStops);
+router.get('/searchStop/:stopId', StopsController.getStop);
+router.post('/addNewStop', StopsController.postAddNewStop);
+router.put('/editStop', StopsController.postEditStop);
+router.delete('/deleteStop/:stopId', StopsController.deleteStop);
+
+
 
 // /Staff routes
-router.post('/searchStaff',StaffController.postSearchStaff);
+router.post('/searchStaff', StaffController.postSearchStaff);
 
 // /Users routes
-router.post('/searchUsers',UsersController.postSearchUsers);
+router.post('/searchUsers', UsersController.postSearchUsers);
 
 module.exports = router;
