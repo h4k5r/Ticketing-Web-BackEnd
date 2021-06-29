@@ -60,7 +60,7 @@ exports.postAddNewBus = (req,res,next) => {
         message:'Added Bus'
     })
 }
-exports.postEditBus = (req,res,next) => {
+exports.putEditBus = (req, res, next) => {
     const id = req.body._id;
     const busNumber = req.body.busNumber;
     const stops = req.body.stops;

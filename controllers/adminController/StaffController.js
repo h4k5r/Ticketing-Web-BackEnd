@@ -3,6 +3,7 @@ exports.postSearchStaff = (req, res, next) => {
     if (staffEmail.trim().length > 0) {
         // fetch staff from database staff email
         return res.json({
+            _id:"sdlkfsld",
             staffEmail: staffEmail,
         });
     }
@@ -11,14 +12,41 @@ exports.postSearchStaff = (req, res, next) => {
     });
 }
 exports.postAddNewStaff = (req, res, next) => {
-
+    const email = req.body.email;
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+    console.log(req.body)
+    res.status(200).json({
+        message:'added staff'
+    })
 }
-exports.postResetPassword = (req, res, next) => {
-
+exports.putResetPassword = (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+    console.log(req.body)
+    res.status(200).json({
+        message:'staff password reset'
+    });
 }
-exports.postChangeBus = (req, res, next) => {
+exports.putChangeBus = (req, res, next) => {
+    const mode = req.body.mode;
+    const staffId = req.body.staffId;
+    if(mode === 'remove') {
 
+    }
+    if(mode === 'change') {
+        const busNumber = req.body.busNumber;
+    }
+    console.log(req.body)
+    res.status(200).json({
+        message:'changed Bus'
+    })
 }
 exports.postDeleteStaff = (req, res, next) => {
-
+    const _id = req.params.staffId;
+    console.log(req.params)
+    res.status(200).json({
+        message:'deleted staff'
+    })
 }

@@ -49,7 +49,7 @@ exports.postAddNewStop = (req, res, next) => {
         message:'added stop'
     })
 }
-exports.postEditStop = (req, res, next) => {
+exports.putEditStop = (req, res, next) => {
     const stopName = req.body.stopName;
     const _id = req.body._id;
     console.log(req.body)
