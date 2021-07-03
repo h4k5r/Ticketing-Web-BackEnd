@@ -12,7 +12,7 @@ router.get('/searchBus/:busId', BusesController.getBus);
 router.post('/searchBuses', BusesController.postSearchBuses);
 router.post('/addNewBus', BusesController.postAddNewBus);
 router.put('/editBus', BusesController.putEditBus);
-router.delete('/deleteBus/:busId',BusesController.deleteBus)
+router.delete('/deleteBus/:busId', BusesController.deleteBus)
 
 // /Stops routes
 router.get('/searchStop/:stopId', StopsController.getStop);
@@ -22,16 +22,19 @@ router.put('/editStop', StopsController.putEditStop);
 router.delete('/deleteStop/:stopId', StopsController.deleteStop);
 
 // /Staff routes
+router.get('/getAssignedBus/:staffId', StaffController.getAssignedBus);
+router.get('/searchStaff/:id', StaffController.getStaffWithId);
 router.post('/searchStaffs', StaffController.postSearchStaff);
-router.post('/addNewStaff',StaffController.postAddNewStaff);
+router.post('/addNewStaff', StaffController.postAddNewStaff);
 router.put('/resetStaff', StaffController.putResetPassword);
 router.put('/changeBus', StaffController.putChangeBus);
-router.delete('/deleteStaff/:staffId', StaffController.postDeleteStaff);
+router.delete('/deleteStaff/:staffId', StaffController.deleteStaff);
 
 // /Users routes
 router.get('/userHistory/:userId', UsersController.getViewHistory);
+router.get('/searchUser/:id', UsersController.getUserWithId);
 router.post('/searchUser', UsersController.postSearchUsers);
-router.post('/addNewUser',UsersController.addNewUser);
+router.post('/addNewUser', UsersController.postAddNewUser);
 router.put('/resetUser', UsersController.putResetPassword);
 router.delete('/deleteUser/:userId', UsersController.deleteUser);
 

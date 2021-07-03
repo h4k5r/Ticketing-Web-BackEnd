@@ -1,106 +1,148 @@
+const bcrypt = require('bcrypt');
+const User = require('../../models/User');
+const saltRounds = 12;
+exports.getUserWithId = (req, res, next) => {
+    const _id = req.params.id;
+    User.findById(_id)
+        .then(user => {
+            res.json({
+                email: user.email
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        });
+}
+exports.getViewHistory = (req, res, next) => {
+    const userId = req.params.userId;
+    console.log(req.params)
+    User.findById(userId)
+        .then(user => {
+            res.status(200).json(user.tickets)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
 exports.postSearchUsers = (req, res, next) => {
     const userEmail = req.body.userEmail || '';
     const userPhone = req.body.userPhone || '';
     const isUserEmail = userEmail.trim().length > 0
     const isUserPhone = userPhone.trim().length > 0;
-    console.log(req.body)
+    if (!(isUserEmail || isUserPhone)) {
+        return res.json({
+            test: 'no valid params'
+        });
+    }
     if (isUserEmail) {
         // fetch user from database using email
-        return res.json({
-            userEmail: userEmail,
-            userId:'1'
-        });
+        User.findOne({email: userEmail})
+            .then(user => {
+                if(!user) {
+                    return Promise.reject('No user Found')
+                }
+                return res.json({
+                    userEmail: user.email,
+                    userId: user._id
+                });
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
     }
     if (isUserPhone) {
         // fetch user from database using phone number
-        return res.json({
-            userPhone: userPhone,
-            userId:'1'
-        });
+        User.findOne({phone: userPhone})
+            .then(user => {
+                if(!user) {
+                    return Promise.reject('No user Found')
+                }
+                return res.json({
+                    phone: user.phone,
+                    userId: user._id
+                });
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
-    return res.json({
-        test: 'no valid params'
-    });
+
 }
-exports.getViewHistory = (req, res, next) => {
-    const userId = req.params.userId;
-    console.log(req.params)
-    res.status(200).json([
-        {
-            busId: '0000',
-            ticketId: '00001',
-            busNumber: '0000',
-            source: 'srirangam',
-            destination: 'tolgate',
-            numberOfTickets: '5',
-            bookedTime: '12:00',
-            hasUsed: true
-        },
-        {
-            busId: '0000',
-            ticketId: '00002',
-            busNumber: '0000',
-            source: 'srirangam',
-            destination: 'tolgate',
-            numberOfTickets: '5',
-            bookedTime: '12:00',
-            hasUsed: true
-        },
-        {
-            busId: '0000',
-            ticketId: '00003',
-            busNumber: '0000',
-            source: 'srirangam',
-            destination: 'tolgate',
-            numberOfTickets: '5',
-            bookedTime: '12:00',
-            hasUsed: true
-        },
-        {
-            busId: '0000',
-            ticketId: '00004',
-            busNumber: '0000',
-            source: 'srirangam',
-            destination: 'tolgate',
-            numberOfTickets: '5',
-            bookedTime: '12:00',
-            hasUsed: true
-        },
-        {
-            busId: '0000',
-            ticketId: '00005',
-            busNumber: '0000',
-            source: 'srirangam',
-            destination: 'tolgate',
-            numberOfTickets: '5',
-            bookedTime: '12:00',
-            hasUsed: true
-        }
-    ])
-}
-exports.addNewUser = (req, res, next) => {
+exports.postAddNewUser = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    console.log(req.body)
-    res.status(200).json({
-        message:'added User'
+    User.find({
+        email: email
     })
+        .then(users => {
+            if (users.length > 0) {
+                res.status(200).json({
+                    message: 'User Already Exists'
+                })
+                return Promise.reject('User Exists');
+            }
+            return bcrypt.hash(password, saltRounds);
+        })
+        .then(hashedPassword => {
+            const user = new User({
+                email: email,
+                password: hashedPassword
+            })
+            return user.save();
+        })
+        .then(savedUser => {
+            res.status(200).json({
+                message: 'added User',
+                user: savedUser.email
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    console.log(req.body)
+
 }
 
 exports.putResetPassword = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    console.log(req.body)
-    res.status(200).json({
-        message:'user password reset'
-    });
+    User.find({email: email})
+        .then(users => {
+            if (!users.length > 0) {
+                res.status(404).json({
+                    message: 'No user Found with the given Email Found'
+                });
+                return Promise.reject('No user found')
+            }
+            return bcrypt.hash(password, saltRounds)
+        })
+        .then(hashedPassword => {
+            return User.findOneAndUpdate({email: email}, {password: hashedPassword})
+        })
+        .then(updatedUser => {
+            res.status(200).json({
+                message: 'user password reset',
+                userEmail: updatedUser.email
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 exports.deleteUser = (req, res, next) => {
     const userId = req.params.userId
-    console.log(req.params)
-    res.status(200).json({
-        message:"User Deleted"
-    })
+    User.findByIdAndDelete(userId)
+        .then(deletedUser => {
+            res.status(200).json({
+                message: "User Deleted"
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+
+
 }
