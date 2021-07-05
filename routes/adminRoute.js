@@ -1,9 +1,9 @@
 const express = require('express');
 
-const BusesController = require('../controllers/adminController/BusesController');
-const StopsController = require('../controllers/adminController/StopsController');
-const StaffController = require('../controllers/adminController/StaffController');
-const UsersController = require('../controllers/adminController/UsersController');
+const BusesController = require('../controllers/AdminController/BusesController');
+const StopsController = require('../controllers/AdminController/StopsController');
+const StaffController = require('../controllers/AdminController/StaffController');
+const UsersController = require('../controllers/AdminController/UsersController');
 
 const router = express.Router();
 

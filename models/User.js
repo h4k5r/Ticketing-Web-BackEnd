@@ -5,12 +5,41 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    verificationToken: {
+        type: String,
+        required: false
+    },
+    otp: {
+        type: Number,
+        required: false
+    },
+    otpValidity: {
+        type: Number,
+        required: false
+    },
     email: {
         type: String,
         required: false
     },
     password: {
         type: String,
+        required: false
+    },
+    isAdmin: {
+        type: Boolean,
+        required: false
+    },
+    resetToken: {
+        type: {
+            token: {
+                type: String,
+                required: false
+            },
+            expiry: {
+                type: String,
+                required: false
+            }
+        },
         required: false
     },
     tickets: {

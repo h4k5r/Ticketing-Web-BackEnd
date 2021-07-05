@@ -1,9 +1,9 @@
 const express = require('express');
 
-const ProfileController = require('../controllers/userController/ProfileController');
-const SearchController = require('../controllers/userController/SearchController');
-const TicketController = require('../controllers/userController/TicketController');
-const TrackController = require('../controllers/userController/TrackController');
+const ProfileController = require('../controllers/UserController/ProfileController');
+const SearchController = require('../controllers/UserController/SearchController');
+const TicketController = require('../controllers/UserController/TicketController');
+const TrackController = require('../controllers/UserController/TrackController');
 
 
 const router = express.Router();
