@@ -13,4 +13,7 @@ router.post('/resetPassword',authController.postResetPassword);
 router.post('/phoneAuth',authController.postPhoneAuthentication);
 router.post('/otpVerify',authController.postOTPAuthentication);
 
+router.get('/validateToken',authController.validateToken);
+
+
 module.exports = router;

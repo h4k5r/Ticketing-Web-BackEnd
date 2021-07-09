@@ -5,6 +5,19 @@ const busSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    location: {
+        type: {
+            lat: {
+                type: Number,
+                required: true
+            },
+            lng: {
+                type: Number,
+                required: true
+            }
+        },
+        required:false
+    },
     stops: {
         type: [{
             _id: {

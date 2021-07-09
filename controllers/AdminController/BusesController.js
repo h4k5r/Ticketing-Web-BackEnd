@@ -13,7 +13,6 @@ exports.postSearchBuses = (req, res, next) => {
             ]
         })
             .then(buses => {
-                console.log(buses)
                 res.json(buses)
             })
             .catch(err => {
@@ -112,5 +111,5 @@ exports.deleteBus = (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
-        })
+        });
 }

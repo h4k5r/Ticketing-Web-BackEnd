@@ -8,17 +8,70 @@ const jwtAdminKey = require('../../ApiKeys').jwtAdminKey;
 const saltRounds = 12;
 const jwtExpiry = 3600000;
 
-exports.isAuthenticatedUser = (req, res, next) => {
-    const token = req.get('Authorization').split(' ')[1];
+exports.validateToken = (req, res, next) => {
     try {
+        const token = req.get('Authorization').split(' ')[1];
         const payload = jwt.verify(token, jwtKey);
-        req.email = payload.email
-        if (Date.now() > payload.exp) {
-            res.json({
-                email: payload.email,
-                error: true
+        if (Date.now() < payload.exp) {
+            if (payload.email) {
+                return res.json({
+                    message: 'Token Is valid',
+                    isValid: true
+                });
+            }
+            if (payload.phone) {
+                return res.json({
+                    message: 'Token Is valid',
+                    isValid: true
+                });
+            }
+        } else {
+            return res.json({
+                error: true,
+                errorMessage: 'Token Expired'
+            })
+        }
+        return;
+    } catch (e) {
+
+    }
+    try {
+        const token = req.get('Authorization').split(' ')[1];
+        const payload = jwt.verify(token, jwtAdminKey);
+        if (Date.now() < payload.exp) {
+            return res.json({
+                message: 'Token Is valid',
+                isAdmin: true,
+                isValid: true
             });
-            next();
+        } else {
+            console.log('in else')
+            return res.json({
+                error: true,
+                errorMessage: 'Token Expired'
+            })
+        }
+    } catch (e) {
+
+    }
+    return res.json({
+        error: true,
+        errorMessage: 'Token Invalid'
+    })
+}
+exports.isAuthenticatedUser = (req, res, next) => {
+    try {
+        const token = req.get('Authorization').split(' ')[1];
+        const payload = jwt.verify(token, jwtKey);
+        if (Date.now() < payload.exp) {
+            if (payload.email) {
+                req.email = payload.email;
+                next();
+            }
+            if (payload.phone) {
+                req.phone = payload.phone;
+                next();
+            }
         } else {
             res.json({
                 error: true,
@@ -34,17 +87,14 @@ exports.isAuthenticatedUser = (req, res, next) => {
 }
 
 exports.isAuthenticatedAdmin = (req, res, next) => {
-    const token = req.get('Authorization').split(' ')[1];
     try {
-        const payload = jwt.verify(token, jwtKey);
-        req.email = payload.email
-        if (Date.now() > payload.exp) {
-            res.json({
-                email: payload.email,
-                error: false,
-            });
+        const token = req.get('Authorization').split(' ')[1];
+        const payload = jwt.verify(token, jwtAdminKey);
+        if (Date.now() < payload.exp) {
+            req.email = payload.email;
             next();
         } else {
+            console.log('in else')
             res.json({
                 error: true,
                 errorMessage: 'Token Expired'
@@ -54,7 +104,7 @@ exports.isAuthenticatedAdmin = (req, res, next) => {
         res.json({
             error: true,
             errorMessage: 'Invalid Token Not Authenticated'
-        })
+        });
     }
 }
 
@@ -120,7 +170,7 @@ exports.postOTPAuthentication = (req, res, next) => {
                 jwtKey,
                 {
                     algorithm: 'HS256',
-                    expiresIn: jwtExpiry
+                    expiresIn: Date.now() + jwtExpiry
                 });
             res.json({
                 message: `OTP Verified`,
@@ -162,18 +212,24 @@ exports.postAuthUserWithEmailAndPassword = (req, res, next) => {
                     jwtKey,
                     {
                         algorithm: 'HS256',
-                        expiresIn: jwtExpiry
+                        expiresIn: Date.now() + jwtExpiry
                     });
                 if (foundUser.isAdmin) {
                     token = jwt.sign(
                         {
                             email: foundUser.email
                         },
-                        jwtKey,
+                        jwtAdminKey,
                         {
                             algorithm: 'HS256',
-                            expiresIn: jwtAdminKey
+                            expiresIn: Date.now() + jwtExpiry
                         })
+                    return res.json({
+                        message: 'User Found',
+                        isAdmin: true,
+                        token: token,
+                        error: false,
+                    });
                 }
                 res.json({
                     message: 'User Found',

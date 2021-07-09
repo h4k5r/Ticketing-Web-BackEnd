@@ -1,10 +1,12 @@
+const Bus = require('../../models/Bus')
 exports.postTrackBus = (req, res, next) => {
     const busId = req.body.busId;
-    console.log(busId)
-    res.status(200).json(
-        {
-            lat: 10.809865,
-            lng: 78.695961
-        }
-    )
+    Bus.findById(busId)
+        .then(bus => {
+            const location = bus.location;
+            res.status(200).json(location);
+        })
+        .catch(err => {
+            console.log(err)
+        });
 }

@@ -7,6 +7,7 @@ const mongoUrl = require('./ApiKeys').mongoUrl;
 const adminRoutes = require('./routes/adminRoute');
 const userRoutes = require('./routes/userRoute');
 const authRoutes = require('./routes/authRoutes');
+const checkIsAdminAuthentication = require('./controllers/AuthController/AuthController').isAuthenticatedAdmin;
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/admin', adminRoutes);
+app.use('/admin', checkIsAdminAuthentication,adminRoutes);
 app.use('/user', userRoutes);
 app.use('',authRoutes);
 
