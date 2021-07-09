@@ -1,12 +1,20 @@
-const User = require('../../models/User')
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const Vonage = require('@vonage/server-sdk');
+
+const User = require('../../models/User')
 
 const jwtKey = require('../../ApiKeys').jwtUserKey;
 const jwtAdminKey = require('../../ApiKeys').jwtAdminKey;
+const vonageApiKey = require('../../ApiKeys').VonageAPIKey;
+const vonageApiSecret = require('../../ApiKeys').VonageAPISecret;
 const saltRounds = 12;
 const jwtExpiry = 3600000;
+const vonage = new Vonage({
+    apiKey: vonageApiKey,
+    apiSecret: vonageApiSecret
+})
 
 exports.validateToken = (req, res, next) => {
     try {
@@ -135,11 +143,24 @@ exports.postPhoneAuthentication = (req, res, next) => {
                 return foundUser.save();
             })
             .then(savedUser => {
-                return res.json({
-                    message: `OTP sent to the Phone ${savedUser.phone}`,
-                    verificationToken: savedUser.verificationToken
-                });
-                //send code
+                const message = `The OTP for the Ticketing App is ${OTP} `;
+                vonage.message.sendSms('Ticketing App',phone,message,(err,response) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                    else {
+                        console.log(response)
+                        if(response.messages[0]['status'] === '0') {
+                            return res.json({
+                                message: `OTP sent to the Phone ${savedUser.phone}`,
+                                verificationToken: savedUser.verificationToken
+                            });
+                        }
+                        else {
+                            console.log('Error Occurred')
+                        }
+                    }
+                })
             })
             .catch(err => {
                 console.log(err);
@@ -152,7 +173,6 @@ exports.postPhoneAuthentication = (req, res, next) => {
 exports.postOTPAuthentication = (req, res, next) => {
     const otp = req.body.otp;
     const receivedToken = req.body.token;
-    console.log(req.body);
     User.findOne({
         verificationToken: receivedToken
     })
@@ -172,6 +192,7 @@ exports.postOTPAuthentication = (req, res, next) => {
                     algorithm: 'HS256',
                     expiresIn: Date.now() + jwtExpiry
                 });
+            console.log(token);
             res.json({
                 message: `OTP Verified`,
                 token: token
@@ -240,7 +261,7 @@ exports.postAuthUserWithEmailAndPassword = (req, res, next) => {
         })
         .catch(err => {
             console.log(err);
-        })
+        });
 }
 
 exports.postCreateAccountEmail = (req, res, next) => {
