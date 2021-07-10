@@ -144,20 +144,24 @@ exports.postPhoneAuthentication = (req, res, next) => {
             })
             .then(savedUser => {
                 const message = `The OTP for the Ticketing App is ${OTP} `;
-                vonage.message.sendSms('Ticketing App',phone,message,(err,response) => {
-                    if(err) {
-                        console.log(err);
-                    }
-                    else {
+                vonage.message.sendSms('Ticketing App', phone, message, (err, response) => {
+                    if (err) {
+                        return res.json({
+                            error:true,
+                            errorMessage:err
+                        });
+                    } else {
                         console.log(response)
-                        if(response.messages[0]['status'] === '0') {
+                        if (response.messages[0]['status'] === '0') {
                             return res.json({
                                 message: `OTP sent to the Phone ${savedUser.phone}`,
                                 verificationToken: savedUser.verificationToken
                             });
-                        }
-                        else {
-                            console.log('Error Occurred')
+                        } else {
+                            return res.json({
+                                error:true,
+                                errorMessage:'Error Occurred'
+                            });
                         }
                     }
                 })
@@ -185,12 +189,12 @@ exports.postOTPAuthentication = (req, res, next) => {
             }
             let token = jwt.sign(
                 {
-                    phone: foundUser.phone
+                    phone: foundUser.phone,
+                    exp: Date.now() + jwtExpiry
                 },
                 jwtKey,
                 {
                     algorithm: 'HS256',
-                    expiresIn: Date.now() + jwtExpiry
                 });
             console.log(token);
             res.json({
@@ -226,24 +230,16 @@ exports.postAuthUserWithEmailAndPassword = (req, res, next) => {
                         errorMessage: 'User not Authenticatted'
                     });
                 }
-                let token = jwt.sign(
-                    {
-                        email: foundUser.email
-                    },
-                    jwtKey,
-                    {
-                        algorithm: 'HS256',
-                        expiresIn: Date.now() + jwtExpiry
-                    });
+                let token;
                 if (foundUser.isAdmin) {
                     token = jwt.sign(
                         {
-                            email: foundUser.email
+                            email: foundUser.email,
+                            exp: Date.now() + jwtExpiry
                         },
                         jwtAdminKey,
                         {
                             algorithm: 'HS256',
-                            expiresIn: Date.now() + jwtExpiry
                         })
                     return res.json({
                         message: 'User Found',
@@ -252,6 +248,15 @@ exports.postAuthUserWithEmailAndPassword = (req, res, next) => {
                         error: false,
                     });
                 }
+                token = jwt.sign(
+                    {
+                        email: foundUser.email,
+                        exp: Date.now() + jwtExpiry
+                    },
+                    jwtKey,
+                    {
+                        algorithm: 'HS256',
+                    });
                 res.json({
                     message: 'User Found',
                     token: token,
@@ -362,6 +367,7 @@ exports.getNewPassword = (req, res, next) => {
             }
             res.json({
                 message: 'user found',
+                email:user.email,
                 error: false,
             });
         })
