@@ -1,20 +1,19 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const Vonage = require('@vonage/server-sdk');
+const twilio = require('twilio');
 
 const User = require('../../models/User')
 
 const jwtKey = require('../../ApiKeys').jwtUserKey;
 const jwtAdminKey = require('../../ApiKeys').jwtAdminKey;
-const vonageApiKey = require('../../ApiKeys').VonageAPIKey;
-const vonageApiSecret = require('../../ApiKeys').VonageAPISecret;
+const twilioSID = require('../../ApiKeys').twilioAccountSID;
+const twilioToken = require('../../ApiKeys').twilioAuthToken;
+
 const saltRounds = 12;
 const jwtExpiry = 3600000;
-const vonage = new Vonage({
-    apiKey: vonageApiKey,
-    apiSecret: vonageApiSecret
-})
+
+const twilioClient = twilio(twilioSID, twilioToken);
 
 exports.validateToken = (req, res, next) => {
     try {
@@ -119,6 +118,7 @@ exports.isAuthenticatedAdmin = (req, res, next) => {
 exports.postPhoneAuthentication = (req, res, next) => {
     const phone = req.body.phone;
     console.log(req.body);
+    let user
     crypto.randomBytes(64, (err, buf) => {
         if (err) {
             return;
@@ -137,34 +137,26 @@ exports.postPhoneAuthentication = (req, res, next) => {
                     });
                     return newUser.save();
                 }
+
                 foundUser.verificationToken = token;
                 foundUser.otp = OTP;
                 foundUser.otpValidity = validity;
                 return foundUser.save();
             })
             .then(savedUser => {
+                user = savedUser;
                 const message = `The OTP for the Ticketing App is ${OTP} `;
-                vonage.message.sendSms('Ticketing App', phone, message, (err, response) => {
-                    if (err) {
-                        return res.json({
-                            error:true,
-                            errorMessage:err
-                        });
-                    } else {
-                        console.log(response)
-                        if (response.messages[0]['status'] === '0') {
-                            return res.json({
-                                message: `OTP sent to the Phone ${savedUser.phone}`,
-                                verificationToken: savedUser.verificationToken
-                            });
-                        } else {
-                            return res.json({
-                                error:true,
-                                errorMessage:'Error Occurred'
-                            });
-                        }
-                    }
+                return twilioClient.messages.create({
+                    from: '+13396138261',
+                    to: '+'+phone,
+                    body: message
                 })
+            })
+            .then (message => {
+                res.json({
+                    message: `OTP sent to the Phone ${user.phone}`,
+                    verificationToken: user.verificationToken
+                });
             })
             .catch(err => {
                 console.log(err);
@@ -367,7 +359,7 @@ exports.getNewPassword = (req, res, next) => {
             }
             res.json({
                 message: 'user found',
-                email:user.email,
+                email: user.email,
                 error: false,
             });
         })
