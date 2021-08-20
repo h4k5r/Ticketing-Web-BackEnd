@@ -1,7 +1,7 @@
-# Ticketing App Backend 
+# Ticketing App Backend
 The backend of the application was build using Express.js on NodeJS
 
-[Here is the link of the front end of this application](https://github.com/h4k5r/Ticketing-Web-FrontEnd "Front End")
+> [Here is the link of the front end of this application](https://github.com/h4k5r/Ticketing-Web-FrontEnd "Front End")
 
 
 # Before Getting Started
@@ -23,3 +23,5 @@ To run the application with nodemon listening to any changes.
 ```shell
 npm start
 ```
+# Making An User Admin
+> Sign Up as a user using email and password. In the database add the field isAdmin to the respective user and set the value to true. 
